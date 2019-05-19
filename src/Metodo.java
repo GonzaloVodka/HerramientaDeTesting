@@ -4,17 +4,15 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 public class Metodo {
 
-    public static final int NOT_FOUND = -1;
-    public String codigo;
-    public int nodosPredicados;
-    public int cantLineas;
-    public int lineasComentadas;
-
+    private final int NOT_FOUND = -1;
+    private String codigo;
+    private int nodosPredicados;
+    private int cantLineas;
+    private int lineasComentadas;
 
     private String palabrasClave = "while|if|for|foreach|case|default|continue|goto|&&|catch|\\?";
 
@@ -32,7 +30,7 @@ public class Metodo {
             // aplicados.
             while (sc.hasNextLine()) {
                 copia = linea = sc.nextLine();
-                if (linea.contains("//") || linea.contains("/*") || linea.contains("*/")) {
+                if (linea.contains(Constantes.COMENTARIO_UNA_LINEA) || linea.contains(Constantes.APERTURA_DE_COMENTARIO) || linea.contains(Constantes.CIERRE_DE_COMENTARIO)) {
                     lineasComentadas++;
                 }
 
@@ -43,19 +41,19 @@ public class Metodo {
 
             }
             cantLineas--;
-            this.codigo = String.join("\n", codigoEditado);
+            this.codigo = String.join(Constantes.SALTO_DE_LINEA, codigoEditado);
             sc.close();
         }
     }
 
     private String removerComentarios(String linea) {
-        int indiceComentario = linea.indexOf("//");
+        int indiceComentario = linea.indexOf(Constantes.COMENTARIO_UNA_LINEA);
         if (indiceComentario != -1) {
             linea = linea.substring(0, indiceComentario);
         }
 
-        int indiceApertura = linea.indexOf("/*");
-        int indiceCerrado = linea.indexOf("*/");
+        int indiceApertura = linea.indexOf(Constantes.APERTURA_DE_COMENTARIO);
+        int indiceCerrado = linea.indexOf(Constantes.CIERRE_DE_COMENTARIO);
         if (indiceApertura != NOT_FOUND || indiceCerrado != NOT_FOUND) {
             if (indiceApertura != NOT_FOUND && indiceCerrado != NOT_FOUND) {
                 String comentario = linea.substring(indiceApertura, indiceCerrado);
@@ -94,5 +92,9 @@ public class Metodo {
 
     public String getComplejidad() {
         return Integer.toString(nodosPredicados + 1);
+    }
+
+    public String getCodigo() {
+        return codigo;
     }
 }
