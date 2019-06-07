@@ -138,6 +138,28 @@ public class Ventana {
         lblComplejidadCiclomtica.setHorizontalAlignment(SwingConstants.CENTER);
         lblComplejidadCiclomtica.setBounds(10, 193, 189, 20);
         PanelAnalisis.add(lblComplejidadCiclomtica);
+        
+        JLabel lblFanIn = new JLabel("Fan In:");
+        lblFanIn.setHorizontalAlignment(SwingConstants.CENTER);
+        lblFanIn.setBounds(10, 244, 94, 20);
+        PanelAnalisis.add(lblFanIn);
+        
+        JLabel nroFanIn = new JLabel("");
+        nroFanIn.setHorizontalAlignment(SwingConstants.CENTER);
+        nroFanIn.setFont(new Font("Tahoma", Font.BOLD, 15));
+        nroFanIn.setBounds(10, 275, 94, 25);
+        PanelAnalisis.add(nroFanIn);
+        
+        JLabel nroFanOut = new JLabel("");
+        nroFanOut.setHorizontalAlignment(SwingConstants.CENTER);
+        nroFanOut.setFont(new Font("Tahoma", Font.BOLD, 15));
+        nroFanOut.setBounds(105, 275, 94, 25);
+        PanelAnalisis.add(nroFanOut);
+        
+        JLabel lblFanOut = new JLabel("Fan Out:");
+        lblFanOut.setHorizontalAlignment(SwingConstants.CENTER);
+        lblFanOut.setBounds(105, 244, 94, 20);
+        PanelAnalisis.add(lblFanOut);
 
         JLabel lblArchivo = new JLabel("Archivo:");
         lblArchivo.setBounds(159, 11, 46, 14);
@@ -164,6 +186,8 @@ public class Ventana {
                 nroLineasComentadas.setText(metodo.getComentarios());
                 porcentajeComentarios.setText(metodo.getPorcentaje());
                 nroComplejidad.setText(metodo.getComplejidad());
+                nroFanIn.setText(analizador.getFanIn(listaMetodos.getSelectedIndex()));
+                nroFanOut.setText(analizador.getFanOut(listaMetodos.getSelectedIndex()));
                 // TODO actualizar aqui los tags del analisis del metodo (cant lineas,
                 // complejidad, etc.)
             }

@@ -93,7 +93,7 @@ public class Metodo {
     public String getComplejidad() {
         return Integer.toString(nodosPredicados + 1);
     }
-
+    
     public String getCodigo() {
         return codigo;
     }
