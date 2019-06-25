@@ -112,7 +112,7 @@ public class Ventana {
         nroLineasComentadas.setBounds(10, 100, 189, 25);
         PanelAnalisis.add(nroLineasComentadas);
 
-        JLabel lblCantidadComentarios = new JLabel("Cantidad de l\u00EDneas comentadas:");
+        JLabel lblCantidadComentarios = new JLabel("Cantidad de l\u00EDneas con comentarios:");
         lblCantidadComentarios.setHorizontalAlignment(SwingConstants.CENTER);
         lblCantidadComentarios.setBounds(10, 79, 189, 20);
         PanelAnalisis.add(lblCantidadComentarios);
@@ -160,6 +160,33 @@ public class Ventana {
         lblFanOut.setHorizontalAlignment(SwingConstants.CENTER);
         lblFanOut.setBounds(105, 244, 94, 20);
         PanelAnalisis.add(lblFanOut);
+        
+        JLabel lblLongitudDeHalstead = new JLabel("Longitud de Halstead:");
+        lblLongitudDeHalstead.setHorizontalAlignment(SwingConstants.CENTER);
+        lblLongitudDeHalstead.setBounds(10, 311, 189, 20);
+        PanelAnalisis.add(lblLongitudDeHalstead);
+        
+        JLabel nroLongitud = new JLabel("");
+        nroLongitud.setHorizontalAlignment(SwingConstants.CENTER);
+        nroLongitud.setFont(new Font("Tahoma", Font.BOLD, 15));
+        nroLongitud.setBounds(10, 342, 189, 25);
+        PanelAnalisis.add(nroLongitud);
+        
+        JLabel lblVolumenDeHalstead = new JLabel("Volumen de Halstead:");
+        lblVolumenDeHalstead.setHorizontalAlignment(SwingConstants.CENTER);
+        lblVolumenDeHalstead.setBounds(10, 378, 189, 20);
+        PanelAnalisis.add(lblVolumenDeHalstead);
+        
+        JLabel nroVolumen = new JLabel("");
+        nroVolumen.setHorizontalAlignment(SwingConstants.CENTER);
+        nroVolumen.setFont(new Font("Tahoma", Font.BOLD, 15));
+        nroVolumen.setBounds(10, 409, 189, 25);
+        PanelAnalisis.add(nroVolumen);
+        
+        JButton btnVerOperadoresY = new JButton("Ver operadores y operandos");
+        btnVerOperadoresY.setEnabled(false);
+        btnVerOperadoresY.setBounds(20, 448, 169, 23);
+        PanelAnalisis.add(btnVerOperadoresY);
 
         JLabel lblArchivo = new JLabel("Archivo:");
         lblArchivo.setBounds(159, 11, 46, 14);
@@ -180,6 +207,7 @@ public class Ventana {
                     return;
 
                 Metodo metodo = analizador.getMetodo(listaMetodos.getSelectedIndex());
+                btnVerOperadoresY.setEnabled(true);
                 textoFuente.setContentType("text/html");
                 textoFuente.setText("<html><pre><code>" + metodo.getCodigo() + "</code></pre></html>");
                 nroLineas.setText(metodo.getLineas());
