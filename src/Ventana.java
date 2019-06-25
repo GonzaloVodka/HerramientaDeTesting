@@ -1,7 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.Window.Type;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -60,7 +59,6 @@ public class Ventana {
      */
     private void initialize() {
         frmHerramientaDeTesting = new JFrame();
-        frmHerramientaDeTesting.setType(Type.UTILITY);
         frmHerramientaDeTesting.setResizable(false);
         frmHerramientaDeTesting.setTitle("Herramienta de Testing");
         frmHerramientaDeTesting.setBounds(100, 100, 800, 600);
