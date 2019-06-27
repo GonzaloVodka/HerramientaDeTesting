@@ -15,10 +15,11 @@ public class Metodo {
 	private int nodosPredicados;
 	private int cantLineas;
 	private int lineasComentadas;
-	private HashMap<String,Integer> operadoresHalstead;
+	private HashMap<String, Integer> operadoresHalstead;
+	private HashMap<String, Integer> operandosHalstead;
 
 	private String palabrasClave = "while|if|for|foreach|case|default|continue|goto|&&|catch|\\?";
-	
+
 	public Metodo(String str) {
 		codigo = str;
 		nodosPredicados = cantLineas = lineasComentadas = 0;
@@ -30,7 +31,8 @@ public class Metodo {
 			Scanner sc = new Scanner(codigo);
 			String linea;
 			List<String> codigoEditado = new ArrayList<>();
-			operadoresHalstead = new HashMap<String,Integer>();
+			operadoresHalstead = new HashMap<String, Integer>();
+			operandosHalstead = new HashMap<String, Integer>();
 			// aplicados.
 			while (sc.hasNextLine()) {
 				linea = sc.nextLine();
@@ -40,12 +42,12 @@ public class Metodo {
 				}
 
 				encontrarOperadores(removerComentarios(linea));
+				encontrarOperandos(removerComentarios(linea));
 				linea = contarYResaltarPredicados(linea, removerComentarios(linea));
-				
 
 				codigoEditado.add(linea);
 				if (!linea.trim().isEmpty())
-					cantLineas++; 
+					cantLineas++;
 
 			}
 			cantLineas--;
@@ -105,44 +107,82 @@ public class Metodo {
 	public String getCodigo() {
 		return codigo;
 	}
-	public void encontrarOperadores(String linea) {
-		String regexOpCaracter ="((?<!("+Constantes.OPERADORES_CARACTER+"))("+Constantes.OPERADORES_CARACTER+")(?!("+Constantes.OPERADORES_CARACTER+")))";
-		//cuenta un operador de la lista de operadores_caracter si no tiene otro de la misma lista detras, delante o ambas.
-		//evita contar por ejemplo, un + 3 veces cuando tengo el operador + y el operador ++ (dos op. distintos)
+
+	private void encontrarOperadores(String linea) {
+		String regexOpCaracter = "((?<!(" + Constantes.OPERADORES_CARACTER + "))(" + Constantes.OPERADORES_CARACTER
+				+ ")(?!(" + Constantes.OPERADORES_CARACTER + ")))";
+		// cuenta un operador de la lista de operadores_caracter si no tiene otro de la
+		// misma lista detras, delante o ambas.
+		// evita contar por ejemplo, un + 3 veces cuando tengo el operador + y el
+		// operador ++ (dos op. distintos)
 		String regexOpPalabra = "((" + Constantes.OPERADORES_PALABRA + ")(?=[\\s\\(]))";
-		String regexOpCompuestos ="("+Constantes.OPERADORES_COMPUESTOS +")";
+		String regexOpCompuestos = "(" + Constantes.OPERADORES_COMPUESTOS + ")";
 		Pattern p = Pattern.compile(regexOpCaracter);
 		Matcher m = p.matcher(linea);
-		while(m.find()) {
-			if(operadoresHalstead.containsKey(m.group())&&m.group()!=null){
-				operadoresHalstead.put(m.group(),operadoresHalstead.get(m.group())+1);
-			}
-			else
-				operadoresHalstead.put(m.group(),1);
+		while (m.find()) {
+			if (operadoresHalstead.containsKey(m.group()) && m.group() != null) {
+				operadoresHalstead.put(m.group(), operadoresHalstead.get(m.group()) + 1);
+			} else
+				operadoresHalstead.put(m.group(), 1);
 		}
 		p = Pattern.compile(regexOpPalabra);
 		m = p.matcher(linea);
-		while(m.find()) {
-			if(operadoresHalstead.containsKey(m.group())&&m.group()!=null){
-				operadoresHalstead.put(m.group(),operadoresHalstead.get(m.group())+1);
-			}
-			else
-				operadoresHalstead.put(m.group(),1);}
+		while (m.find()) {
+			if (operadoresHalstead.containsKey(m.group()) && m.group() != null) {
+				operadoresHalstead.put(m.group(), operadoresHalstead.get(m.group()) + 1);
+			} else
+				operadoresHalstead.put(m.group(), 1);
+		}
 		p = Pattern.compile(regexOpCompuestos);
 		m = p.matcher(linea);
-		while(m.find()) {
-			if(operadoresHalstead.containsKey(m.group())&&m.group()!=null){
-				operadoresHalstead.put(m.group(),operadoresHalstead.get(m.group())+1);
-			}
-			else
-				operadoresHalstead.put(m.group(),1);}
+		while (m.find()) {
+			if (operadoresHalstead.containsKey(m.group()) && m.group() != null) {
+				operadoresHalstead.put(m.group(), operadoresHalstead.get(m.group()) + 1);
+			} else
+				operadoresHalstead.put(m.group(), 1);
+		}
 	}
-	//para testear
-	/*public String getOperadores() {
-		String ret = new String();
-		for(Map.Entry<String, Integer> op : operadoresHalstead.entrySet()) {
-			ret+=op.getKey() + " " + op.getValue() +"\n";
+
+	private void encontrarOperandos(String linea) {
+		String regexLiterales = "(\\d+)";
+		String regexVariables = "((?<=" + Constantes.TIPOS_DE_DATO + ")(?:\\s+)(\\w+)(?:\\s*)(?=\\=))";// busca el
+																										// nombre de la
+																										// variable
+																										// entre un tipo
+																										// de dato y un
+																										// igual
+		Pattern p = Pattern.compile(regexLiterales);
+		Matcher m = p.matcher(linea);
+		while (m.find()) {
+			if (operandosHalstead.containsKey(m.group()) && m.group() != null) {
+				operandosHalstead.put(m.group(), operandosHalstead.get(m.group()) + 1);
+			} else
+				operandosHalstead.put(m.group(), 1);
+		}
+
+		p = Pattern.compile(regexVariables);
+		m = p.matcher(linea);// no supe como hacer que no capture los espacios, asi que uso trim
+		while (m.find()) {
+			if (operandosHalstead.containsKey(m.group().trim()) && m.group() != null) {
+				operandosHalstead.put(m.group().trim(), operandosHalstead.get(m.group().trim()) + 1);
+			} else
+				operandosHalstead.put(m.group().trim(), 1);
+		}
+	}
+	// para testear
+
+	public String getOperadores() {
+		String ret = "\n";
+		for (Map.Entry<String, Integer> op : operadoresHalstead.entrySet()) {
+			ret += op.getKey() + " " + op.getValue() + "\n";
 		}
 		return ret;
-	}*/
+	}
+	public String getOperandos() {
+		String ret = "\n";
+		for (Map.Entry<String, Integer> op : operandosHalstead.entrySet()) {
+			ret += op.getKey() + " " + op.getValue() + "\n";
+		}
+		return ret;
+	}
 }

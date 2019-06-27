@@ -207,7 +207,7 @@ public class Ventana {
                 Metodo metodo = analizador.getMetodo(listaMetodos.getSelectedIndex());
                 btnVerOperadoresY.setEnabled(true);
                 textoFuente.setContentType("text/html");
-                textoFuente.setText("<html><pre><code>" + metodo.getCodigo() +"</code></pre></html>");
+                textoFuente.setText("<html><pre><code>" + metodo.getCodigo()+"/////operandos/////"+metodo.getOperandos()+"/////operadores/////"+metodo.getOperadores() +"</code></pre></html>");
                 nroLineas.setText(metodo.getLineas());
                 nroLineasComentadas.setText(metodo.getComentarios());
                 porcentajeComentarios.setText(metodo.getPorcentaje());
