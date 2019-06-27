@@ -169,6 +169,23 @@ public class Metodo {
 				operandosHalstead.put(m.group().trim(), 1);
 		}
 	}
+	public int calcularLongitud() {
+		int longitud = 0;
+		for (Integer dato : operadoresHalstead.values())
+			longitud += dato;
+		for (Integer dato : operandosHalstead.values())
+			longitud+=dato;
+		return longitud;
+	}
+	public String longitudHalstead() {
+		
+		return Integer.toString(calcularLongitud());
+	}
+	
+	public String volumenHalstead() {
+		int n = operandosHalstead.keySet().size()+operadoresHalstead.keySet().size();
+		return n==0?"0":String.format("%.2f", calcularLongitud()*(Math.log(n)/Math.log(2)));
+	}
 	// para testear
 
 	public String getOperadores() {

@@ -214,6 +214,8 @@ public class Ventana {
                 nroComplejidad.setText(metodo.getComplejidad());
                 nroFanIn.setText(analizador.getFanIn(listaMetodos.getSelectedIndex()));
                 nroFanOut.setText(analizador.getFanOut(listaMetodos.getSelectedIndex()));
+                nroLongitud.setText(metodo.longitudHalstead());
+                nroVolumen.setText(metodo.volumenHalstead());
                 // TODO actualizar aqui los tags del analisis del metodo (cant lineas,
                 // complejidad, etc.)
             }
