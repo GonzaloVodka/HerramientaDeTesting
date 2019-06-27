@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,9 +15,10 @@ public class Metodo {
 	private int nodosPredicados;
 	private int cantLineas;
 	private int lineasComentadas;
+	private HashMap<String,Integer> operadoresHalstead;
 
 	private String palabrasClave = "while|if|for|foreach|case|default|continue|goto|&&|catch|\\?";
-
+	
 	public Metodo(String str) {
 		codigo = str;
 		nodosPredicados = cantLineas = lineasComentadas = 0;
@@ -27,6 +30,7 @@ public class Metodo {
 			Scanner sc = new Scanner(codigo);
 			String linea;
 			List<String> codigoEditado = new ArrayList<>();
+			operadoresHalstead = new HashMap<String,Integer>();
 			// aplicados.
 			while (sc.hasNextLine()) {
 				linea = sc.nextLine();
@@ -35,7 +39,9 @@ public class Metodo {
 					lineasComentadas++;
 				}
 
+				encontrarOperadores(removerComentarios(linea));
 				linea = contarYResaltarPredicados(linea, removerComentarios(linea));
+				
 
 				codigoEditado.add(linea);
 				if (!linea.trim().isEmpty())
@@ -99,4 +105,44 @@ public class Metodo {
 	public String getCodigo() {
 		return codigo;
 	}
+	public void encontrarOperadores(String linea) {
+		String regexOpCaracter ="((?<!("+Constantes.OPERADORES_CARACTER+"))("+Constantes.OPERADORES_CARACTER+")(?!("+Constantes.OPERADORES_CARACTER+")))";
+		//cuenta un operador de la lista de operadores_caracter si no tiene otro de la misma lista detras, delante o ambas.
+		//evita contar por ejemplo, un + 3 veces cuando tengo el operador + y el operador ++ (dos op. distintos)
+		String regexOpPalabra = "((" + Constantes.OPERADORES_PALABRA + ")(?=[\\s\\(]))";
+		String regexOpCompuestos ="("+Constantes.OPERADORES_COMPUESTOS +")";
+		Pattern p = Pattern.compile(regexOpCaracter);
+		Matcher m = p.matcher(linea);
+		while(m.find()) {
+			if(operadoresHalstead.containsKey(m.group())&&m.group()!=null){
+				operadoresHalstead.put(m.group(),operadoresHalstead.get(m.group())+1);
+			}
+			else
+				operadoresHalstead.put(m.group(),1);
+		}
+		p = Pattern.compile(regexOpPalabra);
+		m = p.matcher(linea);
+		while(m.find()) {
+			if(operadoresHalstead.containsKey(m.group())&&m.group()!=null){
+				operadoresHalstead.put(m.group(),operadoresHalstead.get(m.group())+1);
+			}
+			else
+				operadoresHalstead.put(m.group(),1);}
+		p = Pattern.compile(regexOpCompuestos);
+		m = p.matcher(linea);
+		while(m.find()) {
+			if(operadoresHalstead.containsKey(m.group())&&m.group()!=null){
+				operadoresHalstead.put(m.group(),operadoresHalstead.get(m.group())+1);
+			}
+			else
+				operadoresHalstead.put(m.group(),1);}
+	}
+	//para testear
+	/*public String getOperadores() {
+		String ret = new String();
+		for(Map.Entry<String, Integer> op : operadoresHalstead.entrySet()) {
+			ret+=op.getKey() + " " + op.getValue() +"\n";
+		}
+		return ret;
+	}*/
 }

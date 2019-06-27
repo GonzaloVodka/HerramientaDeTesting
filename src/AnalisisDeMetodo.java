@@ -162,5 +162,6 @@ public class AnalisisDeMetodo {
 		sc.close();
 		return Integer.toString(contador);
 	}
+	
 
 }
