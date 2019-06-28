@@ -186,6 +186,26 @@ public class Metodo {
 		int n = operandosHalstead.keySet().size()+operadoresHalstead.keySet().size();
 		return n==0?"0":String.format("%.2f", calcularLongitud()*(Math.log(n)/Math.log(2)));
 	}
+	public Object[][] datosOperador(){
+		Object[][] datos = new Object[operadoresHalstead.keySet().size()][2];
+		int cont = 0;
+		for (Map.Entry<String, Integer> op : operadoresHalstead.entrySet()) {
+			datos[cont][0]= op.getKey();
+			datos[cont][1]= op.getValue();
+			cont++;
+		}
+		return datos;
+	}
+	public Object[][] datosOperando(){
+		Object[][] datos = new Object[operandosHalstead.keySet().size()][2];
+		int cont = 0;
+		for (Map.Entry<String, Integer> op : operandosHalstead.entrySet()) {
+			datos[cont][0]= op.getKey();
+			datos[cont][1]= op.getValue();
+			cont++;
+		}
+		return datos;
+	}
 	// para testear
 
 	public String getOperadores() {
