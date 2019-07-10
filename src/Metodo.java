@@ -17,6 +17,7 @@ public class Metodo {
 	private int lineasComentadas;
 	private HashMap<String, Integer> operadoresHalstead;
 	private HashMap<String, Integer> operandosHalstead;
+	ArrayList <String> variables = new ArrayList<String>();	
 
 	private String palabrasClave = "while|if|for|foreach|case|default|continue|goto|&&|catch|\\?";
 
@@ -96,12 +97,18 @@ public class Metodo {
 		return Integer.toString(lineasComentadas);
 	}
 
+	public Double getPorcentajeD() {
+		return ((double) (lineasComentadas * 100) / cantLineas);
+	}
 	public String getPorcentaje() {
 		return String.format("%.2f", ((double) (lineasComentadas * 100) / cantLineas)) + "%";
 	}
 
 	public String getComplejidad() {
 		return Integer.toString(nodosPredicados + 1);
+	}
+	public int getComplejidadI() {
+		return nodosPredicados + 1;
 	}
 
 	public String getCodigo() {
@@ -145,12 +152,12 @@ public class Metodo {
 
 	private void encontrarOperandos(String linea) {
 		String regexLiterales = "(\\d+)";
-		String regexVariables = "((?<=" + Constantes.TIPOS_DE_DATO + ")(?:\\s+)(\\w+)(?:\\s*)(?=\\=))";// busca el
+		String regexVariables = "((?<=" + Constantes.TIPOS_DE_DATO + ")(?:\\s+)(\\w+)(?:\\s*)(?=\\=|;))";// busca el
 																										// nombre de la
 																										// variable
 																										// entre un tipo
 																										// de dato y un
-																										// igual
+																										// igual o punto y coma
 		Pattern p = Pattern.compile(regexLiterales);
 		Matcher m = p.matcher(linea);
 		while (m.find()) {
@@ -160,15 +167,20 @@ public class Metodo {
 				operandosHalstead.put(m.group(), 1);
 		}
 
+		for (String var : variables) {// encontrar las variables en el codigo luego de que fueron declaradas.
+			p = Pattern.compile(("(?<!(\"))(\\b" + var + "\\b)(?!(\"))"));
+			m= p.matcher(linea);
+			while(m.find())
+					operandosHalstead.put(var, operandosHalstead.get(var) + 1);
+			}
 		p = Pattern.compile(regexVariables);
 		m = p.matcher(linea);// no supe como hacer que no capture los espacios, asi que uso trim
 		while (m.find()) {
-			if (operandosHalstead.containsKey(m.group().trim()) && m.group() != null) {
-				operandosHalstead.put(m.group().trim(), operandosHalstead.get(m.group().trim()) + 1);
-			} else
 				operandosHalstead.put(m.group().trim(), 1);
+				variables.add(m.group().trim());
+			}
 		}
-	}
+	
 	public int calcularLongitud() {
 		int longitud = 0;
 		for (Integer dato : operadoresHalstead.values())

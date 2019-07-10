@@ -183,6 +183,7 @@ public class Ventana {
 		// panel2.add(PanelFuente);
 		PanelFuente.setLayout(null);
 		JTextPane textoFuente = new JTextPane();
+		textoFuente.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		textoFuente.setEditable(false);
 		textoFuente.setBounds(0, 11, 513, 438);
 		// PanelFuente.add(textoFuente);
@@ -192,11 +193,26 @@ public class Ventana {
 		sp.setViewportBorder(null);
 		sp.setBorder(null);
 		PanelFuente.add(sp);
-
+		
+		JPanel PanelReco = new JPanel();
+		PanelReco.setBounds(10, 11, 535, 482);
+		PanelReco.setLayout(null);
+		JTextPane textoReco = new JTextPane();
+		textoReco.setEditable(false);
+		textoReco.setBounds(0, 11, 513, 438);
+		JScrollPane sp2 = new JScrollPane(textoReco);
+		sp2.setBounds(0, -1, 530, 454);
+		sp2.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+		sp2.setViewportBorder(null);
+		sp2.setBorder(null);
+		PanelReco.add(sp2);
+		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(10, 11, 535, 482);
 		tabbedPane.addTab("Código Fuente", PanelFuente);
-		tabbedPane.add("Halstead", PanelHalstead);
+		tabbedPane.addTab("Halstead", PanelHalstead);
+		tabbedPane.addTab("Recomendaciones", PanelReco);
+		tabbedPane.setEnabledAt(2, false);
 
 		JLabel lblOperadoresUnicos = new JLabel("Operadores Unicos:");
 		lblOperadoresUnicos.setBounds(10, 11, 95, 14);
@@ -223,6 +239,7 @@ public class Ventana {
 				JLabel l1 = new JLabel(
 						"<html><b>Se considera Operador:</b><br>while if for foreach case default continue goto catch<br>? ! = * / + - < >++ -- == && <= >= || !=<br><br><b>Se considera Operando:</b><br>Literales y variables de los siguientes tipos:<br>int string float char double Integer String Character Double bool Boolean File");
 				popup.setSize(320, 200);
+				popup.setResizable(false);
 				popup.getContentPane().add(l1);
 				popup.pack();
 				popup.setLocationRelativeTo(frmHerramientaDeTesting);
@@ -271,13 +288,15 @@ public class Ventana {
 		JLabel lblMtodo = new JLabel("M\u00E9todo:");
 		lblMtodo.setBounds(449, 11, 46, 14);
 		frmHerramientaDeTesting.getContentPane().add(lblMtodo);
-
+		
+		
 		JComboBox<String> listaMetodos = new JComboBox<String>();
 		listaMetodos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (listaMetodos.getSelectedIndex() == -1)
 					return;
-
+				
+				String recomendaciones = "";
 				Metodo metodo = analizador.getMetodo(listaMetodos.getSelectedIndex());
 				operadores = metodo.datosOperador();
 				operandos = metodo.datosOperando();
@@ -293,13 +312,27 @@ public class Ventana {
 				nroLineas.setText(metodo.getLineas());
 				nroLineasComentadas.setText(metodo.getComentarios());
 				porcentajeComentarios.setText(metodo.getPorcentaje());
+				if(metodo.getPorcentajeD()<30)
+					recomendaciones += Constantes.RECO_COMENTARIOS;
+					
 				nroComplejidad.setText(metodo.getComplejidad());
+				if(metodo.getComplejidadI()>10)
+					recomendaciones += Constantes.RECO_CC;
 				nroFanIn.setText(analizador.getFanIn(listaMetodos.getSelectedIndex()));
 				nroFanOut.setText(analizador.getFanOut(listaMetodos.getSelectedIndex()));
+				if(Integer.parseInt(analizador.getFanOut(listaMetodos.getSelectedIndex()))>(metodosArchivo.size()/2))
+					recomendaciones += Constantes.RECO_FANOUT;
 				nroLongitud.setText(metodo.longitudHalstead());
+				if(metodo.calcularLongitud()/2>=Integer.parseInt(metodo.getLineas()))
+					recomendaciones+= Constantes.RECO_HALSTEAD;
 				nroVolumen.setText(metodo.volumenHalstead());
-				// TODO actualizar aqui los tags del analisis del metodo (cant lineas,
-				// complejidad, etc.)
+				textoReco.setText(recomendaciones);
+				if(textoReco.getText() == "") {
+					tabbedPane.setEnabledAt(2, false);
+				}
+				else
+					tabbedPane.setEnabledAt(2, true);
+				
 			}
 		});
 		listaMetodos.setMaximumRowCount(8);
@@ -359,11 +392,31 @@ public class Ventana {
 				JFileChooser archivos = new JFileChooser();
 				archivos.setCurrentDirectory(null);
 				archivos.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				archivos.setDialogTitle("Seleccione carpeta del cï¿½digo fuente");
+				archivos.setDialogTitle("Seleccione carpeta del código fuente");
 				archivos.setAcceptAllFileFilterUsed(false);
 				int ret = archivos.showOpenDialog(null);
 				if (ret == JFileChooser.APPROVE_OPTION) {
 					listaArchivos.removeAllItems();
+					listaArchivos.setEnabled(false);
+					listaMetodos.removeAllItems();
+					listaMetodos.setEnabled(false);
+					listaClases.removeAllItems();
+					listaClases.setEnabled(false);
+					datosOperad.setDataVector(null,new String[] {"Operadores","Cantidad"});
+					datosOperand.setDataVector(null,new String[] {"Operandos","Cantidad"});
+					textoFuente.setText("");;
+					tabbedPane.setEnabledAt(2, false);
+					nroComplejidad.setText("");
+					nroFanIn.setText("");
+					nroFanOut.setText("");
+					nroLineas.setText("");
+					nroLineasComentadas.setText("");
+					nroLongitud.setText("");
+					nroVolumen.setText("");
+					porcentajeComentarios.setText("");
+					lblCantOperad.setText("");
+					lblCantOperand.setText("");
+					
 					listaCodigosFuente.clear();
 					frmHerramientaDeTesting
 							.setTitle("Herramienta de Testing - " + archivos.getSelectedFile().getPath());
@@ -372,8 +425,15 @@ public class Ventana {
 						listaCodigosFuente.add(f);
 						listaArchivos.addItem(f.getName());
 					}
+					if(!listaCodigosFuente.isEmpty())
 					listaArchivos.setEnabled(true);
-				} // TODO agregar un popup si no se encontraron archivos .java
+					else {
+						JOptionPane.showMessageDialog(frmHerramientaDeTesting,
+							    "La carpeta seleccionada no contiene archivos .java",
+							    "Error",
+							    JOptionPane.ERROR_MESSAGE);
+					}
+				}
 
 			}
 		});
@@ -381,4 +441,5 @@ public class Ventana {
 		frmHerramientaDeTesting.getContentPane().add(btnSeleccionarCarpeta);
 
 	}
+	
 }
